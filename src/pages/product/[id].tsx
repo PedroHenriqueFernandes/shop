@@ -1,10 +1,10 @@
+import { CartContext } from '@/src/context/CartContext'
 import { stripe } from '@/src/lib/stripe'
 import { ImageContainer, ProductContainer, ProductDetails } from '@/src/styles/pages/product'
-import axios from 'axios'
 import { GetStaticPaths, GetStaticProps } from 'next'
 import Head from 'next/head'
 import Image from 'next/image'
-import { useState } from 'react'
+import { useContext } from 'react'
 import Stripe from 'stripe'
 
 interface ProductProps {
@@ -19,23 +19,19 @@ interface ProductProps {
 }
 
 export default function Product({ product }: ProductProps) {
-    const [isCreatingCheckoutSession, setIsCreatingCheckoutSession] = useState(false)
 
-    async function handleBuyProduct() {
-        try {
-            setIsCreatingCheckoutSession(true)
+    const { addProductToCart } = useContext(CartContext)
 
-            const response = await axios.post('/api/checkout', {
-                priceId: product.defaultPriceId
-            })
-
-            const { checkoutUrl } = response.data
-
-            window.location.href = checkoutUrl
-        } catch (err) {
-            setIsCreatingCheckoutSession(false)
-            alert('Falha ao redirecionar ao checkout')
-        }
+    function addItemToCart() {
+        console.log(product)
+        addProductToCart({
+            id: product.id,
+            name: product.name,
+            imageUrl: product.imageUrl,
+            price: product.price,
+            quantity: 1,
+            defaultPriceId: product.defaultPriceId
+        })
     }
 
     return (
@@ -43,10 +39,10 @@ export default function Product({ product }: ProductProps) {
             <Head>
                 <title>{product.name} | Shop</title>
             </Head>
-            
+
             <ProductContainer>
                 <ImageContainer>
-                    <Image src={product.imageUrl} width={520} height={480} alt="" />
+                    <Image src={product.imageUrl} width={350} height={350} alt="" />
                 </ImageContainer>
 
                 <ProductDetails>
@@ -55,8 +51,8 @@ export default function Product({ product }: ProductProps) {
 
                     <p>{product.description}</p>
 
-                    <button disabled={isCreatingCheckoutSession} onClick={handleBuyProduct}>
-                        Comprar agora
+                    <button onClick={addItemToCart}>
+                        Colocar na sacola
                     </button>
                 </ProductDetails>
             </ProductContainer>

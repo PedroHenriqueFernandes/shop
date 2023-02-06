@@ -3,21 +3,27 @@ import Image from "next/image"
 import Link from "next/link"
 import Head from "next/head"
 
-import { HomeContainer, Product } from "../styles/pages/home"
+import { AddCartContainer, HomeContainer, Product } from "../styles/pages/home"
 
 import { stripe } from "../lib/stripe"
 import Stripe from "stripe"
 
 import 'keen-slider/keen-slider.min.css'
 import { useKeenSlider } from 'keen-slider/react'
+import { ShoppingCart } from "phosphor-react"
+import { useContext } from "react"
+import { CartContext } from "../context/CartContext"
 
+interface product {
+  id: string
+  name: string
+  imageUrl: string
+  price: string
+  defaultPriceId: string
+  quantity: 1
+}
 interface HomeProps {
-  products: {
-    id: string
-    name: string
-    imageUrl: string
-    price: string
-  }[]
+  products: product[]
 }
 
 export default function Home({ products }: HomeProps) {
@@ -27,6 +33,12 @@ export default function Home({ products }: HomeProps) {
       spacing: 48,
     }
   })
+
+  const { addProductToCart } = useContext(CartContext)
+
+  function handleAddItemToCart(product: product) {
+    addProductToCart(product)
+  }
 
   return (
     <>
@@ -41,8 +53,14 @@ export default function Home({ products }: HomeProps) {
               <Image src={product.imageUrl} width={520} height={480} alt="" />
 
               <footer>
-                <strong>{product.name}</strong>
-                <span>{product.price}</span>
+                <div>
+                  <strong>{product.name}</strong>
+                  <span>{product.price}</span>
+                </div>
+
+                <AddCartContainer onClick={() => { handleAddItemToCart(product) }}>
+                  <ShoppingCart size={32} />
+                </AddCartContainer>
               </footer>
             </Product>
           </Link>
@@ -67,6 +85,8 @@ export const getStaticProps: GetStaticProps = async () => {
         style: 'currency',
         currency: 'BRL'
       }).format(price.unit_amount! / 100),
+      description: product.description,
+      defaultPriceId: price.id
     }
   })
 

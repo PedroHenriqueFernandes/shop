@@ -51,6 +51,13 @@ export const Product = styled('div', {
             fontSize: '$xl',
             fontWeight: 'bold',
             color: '$green300',
+        },
+
+        div:{
+            display: 'flex',
+            flexDirection: 'column',
+            alignItems: 'flex-start',
+            gap: '.25rem',
         }
     },
 
@@ -59,5 +66,19 @@ export const Product = styled('div', {
             transform: 'translateY(0%)',
             opacity: 1,
         }
+    }
+})
+
+export const AddCartContainer = styled('div', {
+    padding: '0.75rem',
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    cursor: 'pointer',
+    backgroundColor: '$green500',
+    borderRadius: '8px',
+
+    svg:{
+        color: '$white',
     }
 })
